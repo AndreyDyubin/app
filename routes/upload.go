@@ -22,7 +22,7 @@ func Upload(c echo.Context) error {
 
 	src.Read(buffer)
 
-	res, err := core.Upload(file.Filename, buffer)
+	res, err := core.UploadService.Upload(file.Filename, buffer)
 	if err != nil {
 		return c.JSON(http.StatusOK, &res)
 	}

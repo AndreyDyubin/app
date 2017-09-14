@@ -13,12 +13,15 @@ import (
 	"github.com/AndreyDyubin/app/storage"
 	"github.com/AndreyDyubin/app/routes"
 	_ "github.com/lib/pq"
+	"gopkg.in/reform.v1"
+	"github.com/AndreyDyubin/app/core"
 )
 
 func main() {
 	var VERSION = "dev"
 	var (
 		log *zap.SugaredLogger
+		db  *reform.DB
 	)
 
 	log = logger.NewLogger(zap.DebugLevel).Sugar()
@@ -32,6 +35,8 @@ func main() {
 	}
 	app.Before = func(c *cli.Context) (err error) {
 		// инициализация служб и используемых сервисов
+		core.UploadService = core.NewUploadService(db, log.Named("upload_service"))
+
 		err = storage.ConnectDB()
 		if err != nil {
 			return err

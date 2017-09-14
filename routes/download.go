@@ -10,7 +10,7 @@ import (
 func Download(c echo.Context) error {
 	ID := c.QueryParam("id")
 
-	rf, err := core.Download(ID)
+	rf, err := core.UploadService.Download(ID)
 	if err != nil {
 		return c.HTML(http.StatusOK, err.Error())
 	}

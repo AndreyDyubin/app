@@ -9,7 +9,22 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"net/http"
 	"io"
+	"gopkg.in/reform.v1"
+	"go.uber.org/zap"
 )
+
+var UploadService = new(uploadService)
+
+type uploadService struct {
+	logger *zap.SugaredLogger
+	db     *reform.DB
+}
+
+func NewUploadService(db *reform.DB, logger *zap.SugaredLogger) *uploadService {
+	UploadService.db = db
+	UploadService.logger = logger
+	return UploadService
+}
 
 type result struct {
 	FileID string `json:"file_id"`
@@ -20,7 +35,7 @@ type resultFile struct {
 	Body io.Reader
 }
 
-func Upload(name string, data []byte) (*result, error) {
+func (us *uploadService) Upload(name string, data []byte) (*result, error) {
 
 	u := uuid.NewV4().String()
 	u = strings.Replace(u, "-", "", -1)
@@ -40,6 +55,7 @@ func Upload(name string, data []byte) (*result, error) {
 	}
 	_, err := storage.S3.PutObject(params)
 	if err != nil {
+		us.logger.Error(err)
 		return nil, err
 	}
 	ID, err := storage.SaveDataFile(u, name)
@@ -47,9 +63,10 @@ func Upload(name string, data []byte) (*result, error) {
 	return &result{ID}, err
 }
 
-func Download(ID string) (*resultFile, error) {
+func (us *uploadService) Download(ID string) (*resultFile, error) {
 	df, err := storage.DataFile(ID)
 	if err != nil {
+		us.logger.Error(err)
 		return nil, err
 	}
 	path := bytes.Buffer{}
@@ -65,6 +82,7 @@ func Download(ID string) (*resultFile, error) {
 
 	resp, err := storage.S3.GetObject(params)
 	if err != nil {
+		us.logger.Error(err)
 		return nil, err
 	}
 	return &resultFile{df.Name, *resp.ContentType, resp.Body}, err
