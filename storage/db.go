@@ -37,3 +37,25 @@ func DataFile(uuID string) (*models.DataFiles, error) {
 	}
 	return f.(*models.DataFiles), nil
 }
+
+func SelectList() ([]models.DataFiles, error) {
+	tail := "ORDER BY id DESC LIMIT 20"
+	rows, err := DB.SelectRows(models.DataFilesTable, tail)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	datafiles := make([]models.DataFiles, 0, 20)
+	for {
+		var datafile models.DataFiles
+		err = DB.NextRow(&datafile, rows)
+		if err != nil {
+			break
+		}
+		datafiles = append(datafiles, datafile)
+	}
+	if err != reform.ErrNoRows {
+		return nil, err
+	}
+	return datafiles, nil
+}
