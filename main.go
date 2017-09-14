@@ -109,4 +109,5 @@ func main() {
 func SetupV1(e *echo.Echo) {
 	e.POST("/upload", routes.Upload)
 	e.GET("/download", routes.Download)
+	e.GET("/list", routes.List)
 }
