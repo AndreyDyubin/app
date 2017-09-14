@@ -12,7 +12,7 @@ func Download(c echo.Context) error {
 
 	rf, err := core.UploadService.Download(ID)
 	if err != nil {
-		return c.HTML(http.StatusOK, err.Error())
+		return c.NoContent(http.StatusBadRequest)
 	}
 	buf := bytes.Buffer{}
 	buf.WriteString("attachment; filename=\"")

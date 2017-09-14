@@ -10,11 +10,11 @@ func Upload(c echo.Context) error {
 	var err error
 	file, err := c.FormFile("file")
 	if err != nil {
-		return c.HTML(http.StatusOK, err.Error())
+		return c.NoContent(http.StatusBadRequest)
 	}
 	src, err := file.Open()
 	if err != nil {
-		return c.HTML(http.StatusOK, err.Error())
+		return c.NoContent(http.StatusBadRequest)
 	}
 	defer src.Close()
 	size := file.Size
@@ -24,7 +24,7 @@ func Upload(c echo.Context) error {
 
 	res, err := core.UploadService.Upload(file.Filename, buffer)
 	if err != nil {
-		return c.JSON(http.StatusOK, &res)
+		return c.NoContent(http.StatusBadRequest)
 	}
 	return c.JSON(http.StatusOK, &res)
 }
