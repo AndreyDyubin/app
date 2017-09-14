@@ -13,17 +13,16 @@ import (
 	"go.uber.org/zap"
 )
 
-var UploadService = new(uploadService)
+var UploadService *uploadService
 
 type uploadService struct {
+	bucket string
 	logger *zap.SugaredLogger
 	db     *reform.DB
 }
 
-func NewUploadService(db *reform.DB, logger *zap.SugaredLogger) *uploadService {
-	UploadService.db = db
-	UploadService.logger = logger
-	return UploadService
+func NewUploadService(db *reform.DB, logger *zap.SugaredLogger, bucket string) *uploadService {
+	return &uploadService{bucket, logger, db}
 }
 
 type result struct {
@@ -47,7 +46,7 @@ func (us *uploadService) Upload(name string, data []byte) (*result, error) {
 	path.WriteString("/")
 	path.WriteString(u[3:])
 	params := &s3.PutObjectInput{
-		Bucket:        aws.String("maddevilbucket"),
+		Bucket:        aws.String(us.bucket),
 		Key:           aws.String(path.String()),
 		Body:          fileBytes,
 		ContentLength: aws.Int64(int64(len(data))),
@@ -76,7 +75,7 @@ func (us *uploadService) Download(ID string) (*resultFile, error) {
 	path.WriteString(df.UUID[3:])
 	key := path.String()
 	params := &s3.GetObjectInput{
-		Bucket: aws.String("maddevilbucket"),
+		Bucket: aws.String(us.bucket),
 		Key:    &key,
 	}
 

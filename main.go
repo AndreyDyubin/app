@@ -30,12 +30,13 @@ func main() {
 	app.Name = "dadataproxy"
 	app.Version = VERSION
 	app.Flags = []cli.Flag{
+		&cli.StringFlag{Name: "s3bucket", Value: "bucket", EnvVars: []string{"APP_S3BUCKET"}},
 		&cli.StringFlag{Name: "s3key", Value: "token", EnvVars: []string{"APP_S3KEY"}},
 		&cli.StringFlag{Name: "s3secret", Value: "token", EnvVars: []string{"APP_S3SECRET"}},
 	}
 	app.Before = func(c *cli.Context) (err error) {
 		// инициализация служб и используемых сервисов
-		core.UploadService = core.NewUploadService(db, log.Named("upload_service"))
+		core.UploadService = core.NewUploadService(db, log.Named("upload_service"), c.String("s3bucket"))
 
 		err = storage.ConnectDB()
 		if err != nil {
