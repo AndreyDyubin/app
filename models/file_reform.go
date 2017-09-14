@@ -27,7 +27,7 @@ func (v *dataFilesTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *dataFilesTableType) Columns() []string {
-	return []string{"id", "name"}
+	return []string{"uuid", "name"}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -47,14 +47,14 @@ func (v *dataFilesTableType) PKColumnIndex() uint {
 
 // DataFilesTable represents datafiles view or table in SQL database.
 var DataFilesTable = &dataFilesTableType{
-	s: parse.StructInfo{Type: "DataFiles", SQLSchema: "", SQLName: "datafiles", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int64", Column: "id"}, {Name: "Name", PKType: "", Column: "name"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "DataFiles", SQLSchema: "", SQLName: "datafiles", Fields: []parse.FieldInfo{{Name: "UUID", PKType: "string", Column: "uuid"}, {Name: "Name", PKType: "", Column: "name"}}, PKFieldIndex: 0},
 	z: new(DataFiles).Values(),
 }
 
 // String returns a string representation of this struct or record.
 func (s DataFiles) String() string {
 	res := make([]string, 2)
-	res[0] = "ID: " + reform.Inspect(s.ID, true)
+	res[0] = "UUID: " + reform.Inspect(s.UUID, true)
 	res[1] = "Name: " + reform.Inspect(s.Name, true)
 	return strings.Join(res, ", ")
 }
@@ -63,7 +63,7 @@ func (s DataFiles) String() string {
 // Returned interface{} values are never untyped nils.
 func (s *DataFiles) Values() []interface{} {
 	return []interface{}{
-		s.ID,
+		s.UUID,
 		s.Name,
 	}
 }
@@ -72,7 +72,7 @@ func (s *DataFiles) Values() []interface{} {
 // Returned interface{} values are never untyped nils.
 func (s *DataFiles) Pointers() []interface{} {
 	return []interface{}{
-		&s.ID,
+		&s.UUID,
 		&s.Name,
 	}
 }
@@ -90,26 +90,26 @@ func (s *DataFiles) Table() reform.Table {
 // PKValue returns a value of primary key for that record.
 // Returned interface{} value is never untyped nil.
 func (s *DataFiles) PKValue() interface{} {
-	return s.ID
+	return s.UUID
 }
 
 // PKPointer returns a pointer to primary key field for that record.
 // Returned interface{} value is never untyped nil.
 func (s *DataFiles) PKPointer() interface{} {
-	return &s.ID
+	return &s.UUID
 }
 
 // HasPK returns true if record has non-zero primary key set, false otherwise.
 func (s *DataFiles) HasPK() bool {
-	return s.ID != DataFilesTable.z[DataFilesTable.s.PKFieldIndex]
+	return s.UUID != DataFilesTable.z[DataFilesTable.s.PKFieldIndex]
 }
 
 // SetPK sets record primary key.
 func (s *DataFiles) SetPK(pk interface{}) {
 	if i64, ok := pk.(int64); ok {
-		s.ID = int64(i64)
+		s.UUID = string(i64)
 	} else {
-		s.ID = pk.(int64)
+		s.UUID = pk.(string)
 	}
 }
 

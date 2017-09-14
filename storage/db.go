@@ -21,16 +21,17 @@ func ConnectDB() error {
 	return nil
 }
 
-func SaveDataFile(name string) (int64, error) {
+func SaveDataFile(uuID, name string) (string, error) {
 	f := &models.DataFiles{
+		UUID: uuID,
 		Name: name,
 	}
 	err := DB.Save(f)
-	return f.ID, err
+	return f.UUID, err
 }
 
-func DataFile(ID int64) (*models.DataFiles, error) {
-	f, err := DB.FindByPrimaryKeyFrom(models.DataFilesTable, ID)
+func DataFile(uuID string) (*models.DataFiles, error) {
+	f, err := DB.FindByPrimaryKeyFrom(models.DataFilesTable, uuID)
 	if err != nil {
 		return nil, err
 	}

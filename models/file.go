@@ -4,6 +4,6 @@ package models
 
 //reform:datafiles
 type DataFiles struct {
-	ID   int64  `reform:"id,pk"`
+	UUID string `reform:"uuid,pk"`
 	Name string `reform:"name"`
 }
